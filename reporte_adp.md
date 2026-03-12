@@ -61,6 +61,7 @@ As shown in the attached charts, the Transformer-based architecture consistently
 * **Justification for the "Unsupported" filter:** The left "tail" of the distribution represents ambiguous or out-of-domain messages. Every prediction falling to the left of the red line ($< 0.60$) is successfully captured by our safety logic and flagged as an "Unsupported operation". This visually proves that the threshold filter is necessary to prevent the chatbot from routing incorrect responses.
 
 ![F1 core Comparison](imgs/f1-score-comparison.png)
+
 **Analysis**
 
 * **Transformer superiority:** DistilBERT consistently outperforms the Logistic Regression model in every single category.
