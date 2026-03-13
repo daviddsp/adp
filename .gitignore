@@ -205,3 +205,12 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Project Specific
+model_output/
+saved_model/
+.DS_Store
+.vscode/
+.idea/
+# (Optional) If you want to keep the data in the repo, don't ignore it.
+# data/

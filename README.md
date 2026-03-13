@@ -1,63 +1,67 @@
 # HR Topic Classification Project
 
-This project uses a fine-tuned **DistilBERT** model to classify Human Resources related messages into eight categories: `employee_benefits`, `employee_training`, `payroll`, `performance_management`, `talent_acquisition`, `tax_services`, `time_and_attendance`, and `other`.
+This project focuses on classifying Human Resources related messages into eight distinct categories using a fine-tuned **DistilBERT** model. The categories include: `employee_benefits`, `employee_training`, `payroll`, `performance_management`, `talent_acquisition`, `tax_services`, `time_and_attendance`, and `other`.
+
+## Key Features
+- **Transformer-based Classification**: Uses `distilbert-base-uncased` for efficient and accurate NLP.
+- **Data Leakage Correction**: Implements a strict train/validation/test split (70/15/15) to ensure reliable evaluation.
+- **Confidence Thresholding**: Predictions below a 60% confidence threshold are flagged as "unsupported", preventing low-quality routing.
+- **Ready for Production**: Organized structure with dedicated scripts for training, inference, and testing.
 
 ## Project Structure
-- `ADP/`: Main directory containing data, results, and source files.
-  - `available_conversations.csv`: Training and evaluation data.
-  - `available_topics.csv`: Mapping of topic IDs to labels.
-  - `notebook.ipynb`: Development and inference notebook.
-  - `results/`: Contains model checkpoints (e.g., `checkpoint-360`).
-  - `reporte_adp.md`: Technical project report.
+- `data/`: Contains the datasets (`available_conversations.csv` and `available_topics.csv`).
+- `notebooks/`: Exploratory Data Analysis (EDA) and baseline experiments.
+- `model_output/`: Stores checkpoints during training.
+- `saved_model/`: Contains the final fine-tuned model and tokenizer.
+- `imgs/`: Performance visualizations (confusion matrix, metrics comparison, etc.).
+- `train.py`: Script to fine-tune the model.
+- `predict.py`: Contains the `TopicPredictor` class for making inferences.
+- `test_model.py`: Unit tests to verify model behavior and requirements.
+- `reporte_adp.md` / `reporte-adp.pdf`: Comprehensive technical report and analysis.
+- `requirements.txt`: Project dependencies.
 
-## Setup Instructions
+## Installation
 
-To get this project running on your local machine, follow these steps:
-
-### 1. Create a Virtual Environment
-It is recommended to use a virtual environment to manage dependencies. From the `ADP/` directory, run:
-
+### 1. Set up a Virtual Environment
 ```bash
-cd ADP
 python3 -m venv .venv
+source .venv/bin/activate  # macOS/Linux
+# .venv\Scripts\activate   # Windows
 ```
 
-### 2. Activate the Virtual Environment
-- **macOS/Linux:**
-  ```bash
-  source .venv/bin/activate
-  ```
-- **Windows:**
-  ```bash
-  .venv\Scripts\activate
-  ```
-
-### 3. Install Dependencies
-Install the required libraries. **Important:** When using `zsh`, you must wrap `transformers[torch]` in quotes to prevent shell errors.
-
+### 2. Install Dependencies
 ```bash
-pip install "transformers[torch]" pandas datasets ipykernel matplotlib seaborn
-```
-
-### 4. Setup Jupyter Kernel (Optional)
-If you want to use the virtual environment within the `notebook.ipynb` file:
-
-```bash
-python -m ipykernel install --user --name=adp-project --display-name "Python (ADP Project)"
+pip install -r requirements.txt
 ```
 
 ## Usage
 
-### Running Inference
-You can use the `ADP/notebook.ipynb` file to run predictions. The notebook is pre-configured to load the `checkpoint-360` model and run sample classifications.
-
-### Generating the Report
-If you need to regenerate the technical report in PDF format (requires `pandoc` and a LaTeX engine like `xelatex`):
-
+### Training the Model
+To re-train the model or start from scratch:
 ```bash
-cd ADP
-pandoc reporte_adp.md -o reporte-adp.pdf --pdf-engine=xelatex
+python train.py
+```
+This script will split the data, fine-tune the model, evaluate it on a blind test set, and save the result in `./saved_model`.
+
+### Running Predictions
+You can use the `TopicPredictor` class from `predict.py` in your own scripts:
+
+```python
+from predict import TopicPredictor
+
+predictor = TopicPredictor(model_dir="./saved_model")
+result = predictor.predict("How can I check my payroll deductions?")
+print(result)
+# Output: {'status': 'success', 'topic': 'payroll', 'confidence': 0.98}
+```
+
+### Running Tests
+To verify the model meets the technical requirements (single routing, confidence threshold, accuracy on key domains):
+```bash
+python test_model.py
 ```
 
 ## Results
-The fine-tuned model achieved an accuracy of **0.65** on the test set, significantly outperforming the initial Logistic Regression baseline. Full details can be found in `ADP/reporte_adp.md`.
+The fine-tuned model significantly outperforms the Logistic Regression baseline, achieving high precision in core HR domains like `payroll` and `tax_services`. Visualizations of the performance can be found in the `imgs/` directory.
+
+For a detailed analysis of the methodology, challenges (imbalanced classes), and future improvements, please refer to [reporte_adp.md](reporte_adp.md).
