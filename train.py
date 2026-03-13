@@ -14,7 +14,6 @@ transformers.logging.set_verbosity_error()
 def load_and_split_data(data_path="data/available_conversations.csv"):
     df = pd.read_csv(data_path)
     
-    # DATA LEAKAGE CORRECTION: Split into Train (70%), Validation (15%), Test (15%)
     # 1. Separate Train (70%) and Temp (30%)
     train_texts, temp_texts, train_labels, temp_labels = train_test_split(
         df['message'], df['topic_id'], test_size=0.3, random_state=42, stratify=df['topic_id']
